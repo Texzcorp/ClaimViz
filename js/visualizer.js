@@ -200,6 +200,29 @@ export class EnergyBallVisualizer extends Visualizer {
         };
     }
     
+    reset() {
+        // Réinitialiser les rotations
+        this.rotationX = 0;
+        this.rotationY = 0;
+        this.rotationZ = 0;
+
+        // Réinitialiser les niveaux d'énergie
+        this.energyLevels = {
+            subBass: 0,
+            bass: 0,
+            lowMids: 0,
+            highMids: 0,
+            highs: 0
+        };
+
+        // Effacer le canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Réinitialiser les particules
+        this.energyParticles = [];
+        this.initParticles();
+    }
+
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         

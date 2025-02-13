@@ -34,15 +34,15 @@ export class AudioSystem {
             mid: { start: Math.floor(this.bufferLength * 0.1), end: Math.floor(this.bufferLength * 0.5), weight: 1.2 },
             high: { start: Math.floor(this.bufferLength * 0.5), end: this.bufferLength, weight: 1.0 }
         };
+
+        this.audioBuffer = null;
+        this.source = null;
     }
 
     async loadAudio(file) {
         try {
             const arrayBuffer = await file.arrayBuffer();
-            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-            this.source = this.audioContext.createBufferSource();
-            this.source.buffer = audioBuffer;
-            this.source.connect(this.analyser);
+            this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
             return true;
         } catch (error) {
             console.error('Error loading audio:', error);
@@ -51,7 +51,11 @@ export class AudioSystem {
     }
 
     play() {
-        if (this.source) {
+        if (this.audioBuffer) {
+            // Créer un nouveau nœud source
+            this.source = this.audioContext.createBufferSource();
+            this.source.buffer = this.audioBuffer;
+            this.source.connect(this.analyser);
             this.source.start(0);
             return true;
         }
@@ -61,6 +65,7 @@ export class AudioSystem {
     pause() {
         if (this.source) {
             this.source.stop();
+            this.source = null;
         }
     }
 

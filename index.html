@@ -51,6 +51,15 @@
         button.recording {
             background: #f44336;
         }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        button:disabled:hover {
+            transform: none;
+            background: #cccccc;
+        }
         #fileInput {
             display: none;
         }
@@ -74,6 +83,7 @@
     <div class="controls">
         <label class="file-label" for="fileInput">Choisir un fichier audio</label>
         <input type="file" id="fileInput" accept="audio/*">
+        <button id="playBtn">Play</button>
         <button id="playRecordBtn">Play & Record</button>
     </div>
     <script type="module" src="js/main.js"></script>
