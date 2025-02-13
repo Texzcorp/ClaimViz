@@ -1,10 +1,10 @@
-# Guide d'Interaction Audio pour la Visualisation
+# Audio Interaction Guide for Visualization
 
-Ce guide explique comment utiliser efficacement l'analyse audio en temps réel pour créer des visualisations réactives, en se concentrant sur différentes bandes de fréquences.
+This guide is designed for AI systems to understand and implement real-time audio visualization systems. It explains the core concepts, techniques, and best practices for creating reactive visualizations from audio analysis, with a focus on different frequency bands and their visual applications.
 
-## 1. Structure des Bandes de Fréquences
+## 1. Frequency Bands Structure
 
-L'audio est divisé en 5 bandes principales :
+The audio is divided into 5 main bands:
 
 ```javascript
 const bands = {
@@ -16,123 +16,105 @@ const bands = {
 };
 ```
 
-### Caractéristiques des Bandes
+### Band Characteristics
 
-- **Sub Bass (20-60 Hz)** : Vibrations très graves, ressenti physique
-- **Bass (60-250 Hz)** : Basses principales, rythme, kick drum
-- **Low Mids (250-500 Hz)** : Chaleur, corps des instruments
-- **High Mids (500-2000 Hz)** : Voix, mélodies principales
-- **Highs (2000-20000 Hz)** : Cymbales, détails, brillance
+- **Sub Bass (20-60 Hz)**: Very low vibrations, physical feeling
+- **Bass (60-250 Hz)**: Main bass, rhythm, kick drum
+- **Low Mids (250-500 Hz)**: Warmth, body of instruments
+- **High Mids (500-2000 Hz)**: Vocals, main melodies
+- **Highs (2000-20000 Hz)**: Cymbals, details, brightness
 
-## 2. Obtention des Données Audio
+## 2. Getting Audio Data
 
 ```javascript
-// Obtenir l'analyse complète
+// Get full analysis
 const analysis = audioData.getFullAnalysis();
 const { subBass, bass, lowMids, highMids, highs } = analysis.bands;
 
-// Chaque bande contient une propriété 'intensity' normalisée entre 0 et 1
+// Each band contains an 'intensity' property normalized between 0 and 1
 ```
 
-## 3. Détection des Pics d'Intensité
+## 3. Intensity Peak Detection
 
-### 3.1 Par Bande Individuelle
+### 3.1 By Individual Band
 
 ```javascript
-// Exemple de détection de pic dans les basses
+// Example of bass peak detection
 const bassThreshold = 0.7;
 if (bass.intensity > bassThreshold) {
-    // Pic détecté dans les basses
+    // Bass peak detected
 }
 ```
 
-### 3.2 Intensité Cumulée
+### 3.2 Cumulative Intensity
 
 ```javascript
-// Calculer l'intensité totale
+// Calculate total intensity
 const totalIntensity = subBass.intensity + bass.intensity + 
                       lowMids.intensity + highMids.intensity + 
                       highs.intensity;
 
-// Détecter un pic global
+// Detect global peak
 const globalThreshold = 1.5;
 if (totalIntensity > globalThreshold) {
-    // Pic d'intensité global détecté
+    // Global intensity peak detected
 }
 ```
 
-### 3.3 Éviter les Faux Positifs
+### 3.3 Avoiding False Positives
 
 ```javascript
-// Ajouter un délai minimum entre les détections
-const minTimeBetweenPics = 1.0; // secondes
+// Add minimum delay between detections
+const minTimeBetweenPics = 1.0; // seconds
 if (totalIntensity > threshold && 
     currentTime - lastPicTime > minTimeBetweenPics) {
-    // Pic valide détecté
+    // Valid peak detected
     lastPicTime = currentTime;
 }
 ```
 
-## 4. Interpolation des Valeurs
+## 4. Value Interpolation
 
-Pour des transitions plus fluides, utilisez l'interpolation linéaire (LERP) :
+For smoother transitions, use linear interpolation (LERP):
 
 ```javascript
 function lerp(start, end, amt) {
     return (1 - amt) * start + amt * end;
 }
 
-// Exemple d'utilisation
-const lerpFactor = 0.15; // Ajuster pour plus ou moins de fluidité
+// Usage example
+const lerpFactor = 0.15; // Adjust for more or less smoothness
 currentIntensity = lerp(currentIntensity, targetIntensity, lerpFactor);
 ```
 
-## 5. Applications Visuelles Recommandées
+## 5. Recommended Visual Applications
 
 ### 5.1 Sub Bass & Bass
-- Taille/échelle des éléments
-- Pulsations globales
-- Ondes de choc
-- Déplacements de caméra
+- Element size/scale
+- Global pulsations
+- Shockwaves
+- Camera movements
 
 ### 5.2 Low Mids
-- Rotation des éléments
-- Changements de couleur lents
-- Déformations de forme
+- Element rotation
+- Slow color changes
+- Shape deformations
 
-### 5.3 High Mids
-- Opacité
-- Émission de particules
-- Variations de texture
+### 5.3 High Mids & Highs
+- Particle systems
+- Highlight effects
+- Quick transitions
+- Detail animations
 
-### 5.4 Highs
-- Brillance/luminosité
-- Petites particules
-- Détails fins
-- Scintillement
+## 6. Performance Tips
 
-## 6. Bonnes Pratiques
+- Use requestAnimationFrame for smooth animations
+- Cache frequency band calculations
+- Implement intensity thresholds to avoid constant updates
+- Use WebGL for complex visualizations
+- Consider using Web Audio API's built-in analyzers
 
-1. **Calibration**
-   - Normalisez les valeurs pour différents types de musique
-   - Ajustez les seuils en fonction du genre musical
-
-2. **Performance**
-   - Limitez le nombre de calculs par frame
-   - Utilisez des moyennes glissantes pour stabiliser les valeurs
-   - Mettez en cache les résultats quand c'est possible
-
-3. **Réactivité**
-   - Variez les facteurs d'interpolation selon l'effet désiré
-   - Combinez plusieurs bandes pour des effets complexes
-   - Utilisez des délais différents selon les types d'effets
-
-4. **Design**
-   - Gardez une cohérence visuelle entre les effets
-   - Évitez la sur-stimulation visuelle
-   - Prévoyez des états de repos entre les pics
-
-## 7. Exemple d'Implémentation
+## 7. Example Implementation
 
 ```javascript
 class AudioVisualizer {
@@ -149,7 +131,7 @@ class AudioVisualizer {
         const analysis = audioData.getFullAnalysis();
         const { subBass, bass, lowMids, highMids, highs } = analysis.bands;
 
-        // Interpolation des intensités
+        // Interpolate intensities
         const lerpFactor = 0.15;
         this.currentIntensities.bass = lerp(
             this.currentIntensities.bass,
@@ -169,7 +151,7 @@ class AudioVisualizer {
             lerpFactor
         );
 
-        // Détection de pics
+        // Detect peaks
         const totalIntensity = this.currentIntensities.bass +
                              this.currentIntensities.mids +
                              this.currentIntensities.highs;
@@ -184,25 +166,25 @@ class AudioVisualizer {
 }
 ```
 
-## 8. Enregistrement et Capture Vidéo
+## 8. Video Recording and Capture
 
-Le système permet d'enregistrer les visualisations en vidéo MP4 de haute qualité.
+The system allows recording visualizations as high-quality MP4 video.
 
-### 8.1 Configuration de l'Enregistreur
+### 8.1 Recorder Configuration
 
 ```javascript
-// Configuration de base
+// Basic configuration
 const options = {
     mimeType: 'video/mp4;codecs=h264',
-    videoBitsPerSecond: 8000000 // 8 Mbps pour une bonne qualité
+    videoBitsPerSecond: 8000000 // 8 Mbps for good quality
 };
 
-// Capture du canvas
+// Capture the canvas
 const canvas = document.getElementById('visualizer');
 const stream = canvas.captureStream(60); // 60 FPS
 ```
 
-### 8.2 Démarrage de l'Enregistrement
+### 8.2 Starting Recording
 
 ```javascript
 async function startRecording() {
@@ -210,20 +192,20 @@ async function startRecording() {
         const stream = canvas.captureStream(60);
         mediaRecorder = new MediaRecorder(stream, options);
         
-        // Gestion des données enregistrées
+        // Handle recorded data
         mediaRecorder.ondataavailable = (event) => {
             if (event.data.size > 0) {
                 recordedChunks.push(event.data);
             }
         };
         
-        // Configuration de l'arrêt
+        // Configuration for stopping
         mediaRecorder.onstop = async () => {
             const blob = new Blob(recordedChunks, {
                 type: 'video/mp4'
             });
             
-            // Génération du nom de fichier avec timestamp
+            // Generate file name with timestamp
             const date = new Date();
             const fileName = `visualizer_${date.getFullYear()}${(date.getMonth()+1)
                 .toString().padStart(2,'0')}${date.getDate()
@@ -231,89 +213,80 @@ async function startRecording() {
                 .toString().padStart(2,'0')}${date.getMinutes()
                 .toString().padStart(2,'0')}.mp4`;
             
-            // Téléchargement automatique
+            // Automatic download
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = fileName;
             a.click();
             
-            // Nettoyage
+            // Cleanup
             URL.revokeObjectURL(url);
             recordedChunks = [];
         };
         
         mediaRecorder.start();
     } catch (error) {
-        console.error('Erreur d\'enregistrement:', error);
+        console.error('Recording error:', error);
     }
 }
 ```
 
-### 8.3 Arrêt de l'Enregistrement
+### 8.3 Stopping Recording
 
 ```javascript
 function stopRecording() {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
-        // Le téléchargement se fera automatiquement via l'event onstop
+        // Download will happen automatically via the onstop event
     }
 }
 ```
 
-### 8.4 Bonnes Pratiques pour l'Enregistrement
+### 8.4 Best Practices for Recording
 
-1. **Qualité Vidéo**
-   - Utilisez un bitrate élevé (8 Mbps recommandé)
-   - Capturez en 60 FPS pour une fluidité optimale
-   - Préférez le codec H264 pour une meilleure compatibilité
+1. **Video Quality**
+   - Use a high bitrate (8 Mbps recommended)
+   - Capture at 60 FPS for optimal smoothness
+   - Prefer H264 codec for better compatibility
 
-2. **Gestion de la Mémoire**
-   - Nettoyez les chunks après chaque enregistrement
-   - Libérez les URLs créés avec URL.createObjectURL
-   - Vérifiez la taille des données enregistrées
+2. **Memory Management**
+   - Clean up chunks after each recording
+   - Release created URLs with URL.createObjectURL
+   - Check the size of recorded data
 
-3. **Expérience Utilisateur**
-   - Générez des noms de fichiers clairs avec timestamp
-   - Ajoutez des indicateurs visuels pendant l'enregistrement
-   - Gérez les erreurs gracieusement avec des messages explicites
+3. **User Experience**
+   - Generate clear file names with timestamps
+   - Add visual indicators during recording
+   - Handle errors gracefully with explanatory messages
 
-4. **Compatibilité**
-   - Prévoyez des fallbacks pour les codecs (H264 -> AVC1)
-   - Testez sur différents navigateurs
-   - Vérifiez la compatibilité des options d'encodage
+4. **Compatibility**
+   - Provide fallbacks for codecs (H264 -> AVC1)
+   - Test on different browsers
+   - Check compatibility of encoding options
 
-## 9. Calibration et Normalisation Audio
+## 9. Audio Calibration and Normalization
 
-Le système implémente une calibration et normalisation dynamique des valeurs audio pour assurer une réactivité optimale des visualisations.
+The system implements dynamic audio calibration and normalization for optimal visualization reactivity.
 
-### 9.1 Système de Calibration
+### 9.1 Calibration System
 
 ```javascript
-// Configuration initiale
-constructor() {
-    // Paramètres de calibration
-    this.isCalibrating = true;
-    this.calibrationDuration = 2000; // 2 secondes
-    this.calibrationStartTime = Date.now();
-    this.minIntensity = 0.1;
-    this.intensityMultiplier = 5.0;
-    
-    // Système de fade-in
-    this.fadeInDuration = 800;
-    this.fadeInStartTime = 0;
-    this.isFading = false;
-    this.fadeIntensity = 0;
-}
+// Initial configuration
+this.isCalibrating = true;
+this.calibrationDuration = 2000; // 2 seconds
+this.calibrationStartTime = Date.now();
+this.minIntensity = 0.1;
+this.intensityMultiplier = 5.0;
 ```
 
-### 9.2 Mise à Jour de la Calibration
+### 9.2 Updating Calibration
 
 ```javascript
 updateFadeAndCalibration() {
     const currentTime = Date.now();
     
-    // Mise à jour du fade-in
+    // Update fade-in
     if (this.isFading) {
         const elapsed = currentTime - this.fadeInStartTime;
         if (elapsed < this.fadeInDuration) {
@@ -324,7 +297,7 @@ updateFadeAndCalibration() {
         }
     }
     
-    // Mise à jour de la calibration
+    // Update calibration
     if (this.isCalibrating) {
         const elapsed = currentTime - this.calibrationStartTime;
         if (elapsed >= this.calibrationDuration) {
@@ -334,11 +307,11 @@ updateFadeAndCalibration() {
 }
 ```
 
-### 9.3 Normalisation des Valeurs
+### 9.3 Normalizing Values
 
 ```javascript
 normalizeValue(value, key) {
-    // Pendant la calibration, amplification progressive
+    // During calibration, progressive amplification
     if (this.isCalibrating) {
         return Math.max(this.minIntensity, 
             value * this.fadeIntensity * this.intensityMultiplier);
@@ -347,7 +320,7 @@ normalizeValue(value, key) {
     const peak = this.peakLevels.get(key) || value;
     const valley = this.valleyLevels.get(key) || value;
     
-    // Mise à jour des niveaux avec adaptation rapide
+    // Update levels with rapid adaptation
     if (value > peak) {
         this.peakLevels.set(key, value);
     } else {
@@ -360,7 +333,7 @@ normalizeValue(value, key) {
         this.valleyLevels.set(key, valley + (value - valley) * this.adaptationRate);
     }
     
-    // Normalisation avec amplification
+    // Normalize with amplification
     const range = peak - valley;
     if (range < 0.0001) return this.minIntensity;
     
@@ -370,94 +343,94 @@ normalizeValue(value, key) {
 }
 ```
 
-### 9.4 Bonnes Pratiques pour la Calibration
+### 9.4 Best Practices for Calibration
 
-1. **Phase de Calibration**
-   - Durée courte (2 secondes) pour une réactivité rapide
-   - Fade-in progressif pour éviter les transitions brusques
-   - Intensité minimum garantie (0.1)
+1. **Calibration Phase**
+   - Short duration (2 seconds) for rapid reactivity
+   - Progressive fade-in to avoid abrupt transitions
+   - Minimum intensity guaranteed (0.1)
 
-2. **Adaptation Dynamique**
-   - Suivi des pics et creux pour chaque bande
-   - Taux d'adaptation rapide pour suivre les changements
-   - Amplification paramétrable (x5 par défaut)
+2. **Dynamic Adaptation**
+   - Track peaks and valleys for each band
+   - Rapid adaptation rate to follow changes
+   - Amplification parameterizable (x5 by default)
 
-3. **Gestion des Valeurs**
-   - Protection contre les divisions par zéro
-   - Normalisation dans l'intervalle [0,1]
-   - Amplification post-normalisation
+3. **Value Management**
+   - Protection against division by zero
+   - Normalization within the [0,1] range
+   - Post-normalization amplification
 
-4. **Optimisation**
-   - Cache des valeurs précédentes
-   - Mise à jour efficace des niveaux
-   - Transitions fluides entre les états
+4. **Optimization**
+   - Cache previous values
+   - Efficient update of levels
+   - Smooth transitions between states
 
-## 10. Stratégie de Séparation des Bandes de Fréquences
+## 10. Frequency Band Separation Strategy
 
-La qualité d'une visualisation audio dépend fortement de la manière dont les différentes bandes de fréquences sont analysées et appliquées aux paramètres visuels.
+The quality of an audio visualization depends heavily on how different frequency bands are analyzed and applied to visual parameters.
 
-### 10.1 Découpage et Analyse des Bandes
+### 10.1 Frequency Band Division and Analysis
 
 ```javascript
-// Définition des plages de fréquences
+// Frequency band definitions
 const frequencyBands = {
-    subBass: { start: 20, end: 60 },    // Très basses fréquences
-    bass: { start: 60, end: 250 },      // Basses
-    lowMids: { start: 250, end: 500 },  // Bas médiums
-    highMids: { start: 500, end: 2000 }, // Hauts médiums
-    highs: { start: 2000, end: 20000 }  // Aigus
+    subBass: { start: 20, end: 60 },    // Very low frequencies
+    bass: { start: 60, end: 250 },      // Low frequencies
+    lowMids: { start: 250, end: 500 },  // Low mid frequencies
+    highMids: { start: 500, end: 2000 }, // High mid frequencies
+    highs: { start: 2000, end: 20000 }  // High frequencies
 };
 
-// Calcul de l'intensité d'une bande par accumulation
+// Calculate intensity of a band by accumulation
 function getBandIntensity(frequencyData, bandStart, bandEnd, sampleRate, fftSize) {
     const startIndex = Math.floor(bandStart * fftSize / sampleRate);
     const endIndex = Math.floor(bandEnd * fftSize / sampleRate);
     let total = 0;
     
-    // Accumulation des sous-bandes
+    // Accumulate sub-bands
     for (let i = startIndex; i < endIndex; i++) {
         total += frequencyData[i];
     }
     
-    // Moyenne normalisée
+    // Normalized average
     return total / ((endIndex - startIndex) * 255);
 }
 ```
 
-### 10.2 Application aux Paramètres Visuels
+### 10.2 Applying to Visual Parameters
 
-Chaque bande de fréquence doit être associée à des paramètres visuels cohérents avec sa nature :
+Each frequency band should be associated with coherent visual parameters:
 
 ```javascript
-// Exemple d'application des fréquences aux paramètres visuels
+// Example of applying frequencies to visual parameters
 function updateVisualParameters(analysis) {
     const { subBass, bass, lowMids, highMids, highs } = analysis.bands;
     
-    // 1. Sub-Bass (20-60 Hz) : Mouvements lents et puissants
+    // 1. Sub-Bass (20-60 Hz): Slow and powerful movements
     const globalScale = lerp(1, 1.2, subBass.intensity);
     const pulseIntensity = lerp(0.8, 1.2, subBass.intensity);
     
-    // 2. Bass (60-250 Hz) : Impacts rythmiques
+    // 2. Bass (60-250 Hz): Rhythmic impacts
     const baseSize = lerp(baseMinSize, baseMaxSize, bass.intensity);
     const waveAmplitude = lerp(1, 1.5, bass.intensity);
     
-    // 3. Low-Mids (250-500 Hz) : Transitions fluides
+    // 3. Low-Mids (250-500 Hz): Smooth transitions
     const rotationSpeed = lerp(0.001, 0.003, lowMids.intensity);
     const colorSaturation = lerp(0.5, 0.8, lowMids.intensity);
     
-    // 4. High-Mids (500-2000 Hz) : Mouvements intermédiaires
+    // 4. High-Mids (500-2000 Hz): Intermediate movements
     const particleSpeed = lerp(0.5, 2, highMids.intensity);
     const particleSpread = lerp(0.1, 0.3, highMids.intensity);
     
-    // 5. Highs (2000-20000 Hz) : Effets diffus et rapides
+    // 5. Highs (2000-20000 Hz): Diffuse and rapid effects
     const sparkleIntensity = highs.intensity;
     const noiseAmount = lerp(0.1, 0.4, highs.intensity);
 }
 ```
 
-### 10.3 Interpolation et Lissage
+### 10.3 Interpolation and Smoothing
 
-Pour obtenir des transitions fluides et naturelles :
+For smooth transitions:
 
 ```javascript
 class ParameterInterpolator {
@@ -467,77 +440,79 @@ class ParameterInterpolator {
         this.smoothingFactor = smoothingFactor;
     }
     
-    // Mise à jour avec lissage adapté à la fréquence
+    // Update with smoothing adapted to frequency
     update(newTarget) {
         this.targetValue = newTarget;
-        // Lissage plus fort pour les basses, plus réactif pour les aigus
+        // Stronger smoothing for bass, more reactive for highs
         this.currentValue += (this.targetValue - this.currentValue) * this.smoothingFactor;
         return this.currentValue;
     }
 }
 
-// Exemple d'utilisation
-const bassInterpolator = new ParameterInterpolator(0, 0.05);  // Lissage fort
-const highsInterpolator = new ParameterInterpolator(0, 0.3);  // Plus réactif
+// Usage example
+const bassInterpolator = new ParameterInterpolator(0, 0.05);  // Strong smoothing
+const highsInterpolator = new ParameterInterpolator(0, 0.3);  // More reactive
 ```
 
-### 10.4 Bonnes Pratiques pour l'Application des Fréquences
+### 10.4 Best Practices for Frequency Application
 
-1. **Basses Fréquences (20-250 Hz)**
-   - Paramètres globaux et impactants
-   - Mouvements lents et amples
-   - Fort lissage temporel
-   - Exemples : échelle globale, pulsations, ondes de base
+1. **Low Frequencies (20-250 Hz)**
+   - Global and impactful parameters
+   - Slow and broad movements
+   - Strong temporal smoothing
+   - Examples: global scale, pulsations, base waves
 
-2. **Fréquences Moyennes (250-2000 Hz)**
-   - Paramètres de transition
-   - Mouvements fluides et continus
-   - Lissage modéré
-   - Exemples : rotation, déplacement, couleur
+2. **Mid Frequencies (250-2000 Hz)**
+   - Transition parameters
+   - Smooth and continuous movements
+   - Moderate smoothing
+   - Examples: rotation, movement, color
 
-3. **Hautes Fréquences (2000-20000 Hz)**
-   - Paramètres fins et détaillés
-   - Mouvements rapides et diffus
-   - Lissage minimal
-   - Exemples : particules, étincelles, bruit
+3. **High Frequencies (2000-20000 Hz)**
+   - Fine and detailed parameters
+   - Rapid and diffuse movements
+   - Minimal smoothing
+   - Examples: particles, sparkles, noise
 
-4. **Conseils d'Implémentation**
-   - Utiliser des courbes d'interpolation non-linéaires pour plus de naturel
-   - Adapter les plages de valeurs à l'impact visuel souhaité
-   - Combiner plusieurs bandes pour des effets complexes
-   - Prévoir des valeurs par défaut harmonieuses
+4. **Implementation Tips**
+   - Use non-linear interpolation curves for more natural effects
+   - Adapt value ranges to desired visual impact
+   - Combine multiple bands for complex effects
+   - Provide default values for harmonious visuals
 
-## Architecture du Système
+## System Architecture
 
-### 1. Système Audio (`audioSystem.js`)
+### 1. Audio System (`audioSystem.js`)
 
 ```javascript
-// Configuration initiale
+// Initial configuration
 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 this.analyser = this.audioContext.createAnalyser();
 this.analyser.fftSize = 2048;
 this.analyser.smoothingTimeConstant = 0.85;
 
-// Chaîne de traitement audio
+// Audio processing chain
 this.gainNode = this.audioContext.createGain();
-this.gainNode.gain.value = 0.04; // Volume à 4% pour éviter la saturation
+this.gainNode.gain.value = 0.04; // Volume at 4% to avoid saturation
 this.analyser.connect(this.gainNode);
 this.gainNode.connect(this.audioContext.destination);
 ```
 
-#### Système de Fade-in
-Pour une transition fluide :
+#### Fade-in System
+For a smooth transition:
+
 ```javascript
-this.fadeInDuration = 800; // 800ms de fade-in
+this.fadeInDuration = 800; // 800ms fade-in
 this.fadeInStartTime = 0;
 this.isFading = false;
 this.fadeIntensity = 0;
-this.intensityMultiplier = 5.0; // Amplification des valeurs
-this.minIntensity = 0.2; // Intensité minimum
+this.intensityMultiplier = 5.0; // Amplification of values
+this.minIntensity = 0.2; // Minimum intensity
 ```
 
-#### Analyse des Fréquences
-Division en bandes de fréquences pour une meilleure réactivité :
+#### Frequency Analysis
+Divide frequencies into bands for better reactivity:
+
 ```javascript
 getBassFrequency() {
     const bassData = this.dataArray.slice(0, 60); // 20-60 Hz
@@ -555,16 +530,17 @@ getHighFrequency() {
 }
 ```
 
-### 2. Système d'Enregistrement (`recorder.js`)
+### 2. Recording System (`recorder.js`)
 
-Configuration pour l'enregistrement en MP4 :
+Configuration for MP4 recording:
+
 ```javascript
 const options = {
     mimeType: 'video/mp4;codecs=h264',
-    videoBitsPerSecond: 8000000 // 8 Mbps pour une bonne qualité
+    videoBitsPerSecond: 8000000 // 8 Mbps for good quality
 };
 
-// Fallback si H264 n'est pas supporté
+// Fallback if H264 is not supported
 try {
     mediaRecorder = new MediaRecorder(stream, options);
 } catch (e) {
@@ -573,40 +549,41 @@ try {
 }
 ```
 
-### 3. Interface Utilisateur
+### 3. User Interface
 
-Structure HTML minimale :
+Minimal HTML structure:
+
 ```html
 <canvas id="visualizer"></canvas>
 <div class="controls">
-    <label class="file-label" for="fileInput">Choisir un fichier audio</label>
+    <label class="file-label" for="fileInput">Choose an audio file</label>
     <input type="file" id="fileInput" accept="audio/*">
     <button id="playRecordBtn">Play & Record</button>
 </div>
 ```
 
-## Bonnes Pratiques
+## Best Practices
 
-1. **Gestion Audio**
-   - Utiliser un gain node pour contrôler le volume (4% recommandé)
-   - Implémenter un fade-in pour éviter les transitions brusques
-   - Normaliser les valeurs audio avec une intensité minimum
+1. **Audio Management**
+   - Use a gain node to control volume (4% recommended)
+   - Implement fade-in to avoid abrupt transitions
+   - Normalize audio values with a minimum intensity
 
 2. **Animation**
-   - Utiliser requestAnimationFrame pour les animations
-   - Adapter l'opacité du fade en fonction de l'intensité audio
-   - Limiter le nombre de particules/éléments pour les performances
+   - Use requestAnimationFrame for smooth animations
+   - Adapt opacity of fade based on audio intensity
+   - Limit the number of particles/elements for performance
 
-3. **Enregistrement**
-   - Toujours enregistrer en MP4 avec codec H264 (ou avc1 en fallback)
-   - Utiliser un bitrate vidéo élevé (8 Mbps recommandé)
-   - Inclure la date dans le nom du fichier enregistré
+3. **Recording**
+   - Always record in MP4 with H264 codec (or AVC1 as fallback)
+   - Use a high video bitrate (8 Mbps recommended)
+   - Include date in the recorded file name
 
-4. **Serveur Local**
-   - Utiliser un serveur local (ex: Python) pour éviter les problèmes CORS
-   - Configurer les headers CORS appropriés
+4. **Local Server**
+   - Use a local server (e.g., Python) to avoid CORS issues
+   - Configure appropriate CORS headers
 
-## Configuration du Serveur
+## Server Configuration
 
 ```python
 from http.server import HTTPServer, SimpleHTTPRequestHandler
@@ -621,120 +598,120 @@ httpd = HTTPServer(('localhost', 8000), CORSRequestHandler)
 httpd.serve_forever()
 ```
 
-## Optimisations Recommandées
+## Recommended Optimizations
 
 1. **Performance**
-   - Utiliser `analyser.smoothingTimeConstant = 0.85` pour un rendu fluide
-   - Limiter le nombre d'éléments animés
-   - Utiliser des opacités faibles (0.1) pour les effets de fade
+   - Use `analyser.smoothingTimeConstant = 0.85` for smooth rendering
+   - Limit the number of animated elements
+   - Use low opacity values (0.1) for fade effects
 
-2. **Qualité Audio**
-   - FFT size de 2048 pour une bonne résolution
-   - Division des fréquences en bandes (basse, moyenne, haute)
-   - Calibration automatique des niveaux
+2. **Audio Quality**
+   - FFT size of 2048 for good resolution
+   - Divide frequencies into bands for better reactivity
+   - Automatic calibration of levels
 
-3. **Qualité Vidéo**
-   - Enregistrement en 60 FPS
-   - Codec H264 pour une meilleure compatibilité
-   - Bitrate élevé pour une qualité optimale
+3. **Video Quality**
+   - Record at 60 FPS
+   - Use H264 codec for better compatibility
+   - High bitrate for optimal quality
 
-## Dépannage
+## Troubleshooting
 
-1. **Problèmes CORS**
-   - Toujours utiliser un serveur local
-   - Vérifier les headers CORS
+1. **CORS Issues**
+   - Always use a local server
+   - Check CORS headers
 
-2. **Problèmes d'Enregistrement**
-   - Vérifier le support des codecs (H264/avc1)
-   - Utiliser le fallback approprié
-   - Nettoyer les ressources après l'enregistrement
+2. **Recording Issues**
+   - Check codec support (H264/AVC1)
+   - Use fallbacks appropriately
+   - Clean up resources after recording
 
-3. **Problèmes Audio**
-   - Vérifier le gain (4% recommandé)
-   - Implémenter le fade-in
-   - Calibrer les niveaux audio
+3. **Audio Issues**
+   - Check gain (4% recommended)
+   - Implement fade-in
+   - Calibrate audio levels
 
-## Conseils Avancés pour les Visualisations Audio
+## Advanced Tips for Audio Visualizations
 
-### Utilisation de Courbes Mathématiques
+### Using Mathematical Curves
 
-1. **Courbes de Lissajous**
-   - Parfaites pour créer des motifs harmonieux pendant les passages calmes
-   - Paramètres à moduler : fréquences (a, b) et phase
-   - Plus les fréquences sont proches, plus le motif est stable
-   - Utiliser les moyennes fréquences pour la phase crée un mouvement naturel
+1. **Lissajous Curves**
+   - Perfect for creating harmonious patterns during calm passages
+   - Parameters to modulate: frequencies (a, b) and phase
+   - The closer the frequencies, the more stable the pattern
+   - Use mid frequencies for phase to create natural movement
 
-2. **Spirales Logarithmiques**
-   - Idéales pour les moments de forte intensité
-   - Le facteur de croissance contrôle l'expansion
-   - Le nombre de spires peut être modulé par les basses
-   - Créent un effet d'aspiration très dynamique
+2. **Logarithmic Spirals**
+   - Ideal for intense moments
+   - Growth factor controls expansion
+   - Number of turns can be modulated by bass
+   - Creates a dynamic suction effect
 
-### Optimisation des Performances
+### Optimizing Performance
 
-1. **Gestion des Particules**
-   - Adapter le nombre de particules à l'intensité au carré (Math.pow) pour une meilleure distribution
-   - Limiter les connexions aux particules ayant une vie suffisante (> 0.2)
-   - Ne traiter qu'une particule sur deux pour les connexions
-   - Supprimer rapidement les particules mortes
+1. **Particle Management**
+   - Adapt the number of particles to intensity squared (Math.pow) for better distribution
+   - Limit connections to particles with sufficient life (> 0.2)
+   - Only process every other particle for connections
+   - Quickly remove dead particles
 
-2. **Effets Visuels**
-   - Effacer complètement le canvas à chaque frame pour éviter l'accumulation
-   - Limiter strictement les valeurs alpha pour prévenir la surexposition
-   - Utiliser des gradients avec des stops à 0 pour des transitions douces
-   - Multiplier les alphas des connexions par la vie des particules
+2. **Visual Effects**
+   - Completely clear the canvas each frame to avoid accumulation
+   - Strictly limit alpha values to prevent overexposure
+   - Use gradients with stops at 0 for smooth transitions
+   - Multiply alpha values of connections by particle life
 
-### Techniques de Mouvement Avancées
+### Advanced Movement Techniques
 
-1. **Rotation Globale**
-   - Utiliser les basses pour la vitesse de rotation
-   - Ajouter une composante des moyennes pour plus de nuance
-   - Appliquer une échelle inversement proportionnelle à la distance du centre
+1. **Global Rotation**
+   - Use bass for rotation speed
+   - Add a mid frequency component for more nuance
+   - Apply inverse scaling based on distance from the center
 
-2. **Variations Harmoniques**
-   - Moduler la taille avec des sinus de différentes fréquences
-   - Faire varier les rayons avec le temps pour un effet de pulsation
-   - Utiliser plusieurs couches de mouvement pour plus de complexité
-   - Synchroniser les variations avec le tempo quand possible
+2. **Harmonic Variations**
+   - Modulate size with different frequency sinusoids
+   - Vary radii with time for a pulsation effect
+   - Use multiple layers of movement for complexity
+   - Synchronize variations with tempo when possible
 
-### Gestion des Couleurs
+### Color Management
 
-1. **Couleurs Dynamiques**
-   - Baser la teinte sur la position angulaire pour une cohérence spatiale
-   - Ajouter des variations sinusoïdales pour plus de vie
-   - Moduler la saturation avec les hautes fréquences
-   - Ajuster la luminosité selon l'intensité globale
+1. **Dynamic Colors**
+   - Base hue on angular position for spatial coherence
+   - Add sinusoidal variations for more life
+   - Modulate saturation with high frequencies
+   - Adjust brightness based on global intensity
 
-2. **Connexions entre Particules**
-   - Utiliser la même teinte que les particules pour l'harmonie
-   - Faire varier l'épaisseur selon l'intensité
-   - Limiter la distance maximale en fonction des hautes fréquences
-   - Ajuster l'alpha selon la distance et l'énergie
+2. **Particle Connections**
+   - Use the same hue as particles for harmony
+   - Vary thickness based on intensity
+   - Limit maximum distance based on high frequencies
+   - Adjust alpha based on distance and energy
 
-### Astuces pour l'Interactivité
+### Tips for Interactivity
 
-1. **Réactivité Multi-niveaux**
-   - Basses : contrôle de la position et du mouvement de base
-   - Moyennes : modulation des variations et des rotations
-   - Hautes : détails visuels et connexions
-   - Intensité globale : nombre de particules et luminosité
+1. **Multi-Level Reactivity**
+   - Bass: control of position and basic movement
+   - Mid frequencies: modulation of variations and rotations
+   - High frequencies: detailed visual effects and connections
+   - Global intensity: number of particles and brightness
 
-2. **Transitions Fluides**
-   - Utiliser des courbes différentes selon l'intensité
-   - Interpoler progressivement entre les états
-   - Maintenir une cohérence visuelle même pendant les changements
-   - Éviter les changements trop brusques qui peuvent distraire
+2. **Smooth Transitions**
+   - Use different curves based on intensity
+   - Interpolate smoothly between states
+   - Maintain visual coherence even during changes
+   - Avoid abrupt changes that can distract
 
-### Équilibre Visuel
+### Visual Balance
 
-1. **Densité Adaptative**
-   - Réduire le nombre de particules pendant les passages intenses
-   - Augmenter leur taille et leur impact visuel en compensation
-   - Maintenir un équilibre entre complexité et lisibilité
-   - Adapter la transparence globale à la densité
+1. **Adaptive Density**
+   - Reduce the number of particles during intense passages
+   - Increase their size and visual impact in compensation
+   - Maintain a balance between complexity and readability
+   - Adapt global transparency to density
 
-2. **Composition Dynamique**
-   - Créer des zones de focus avec les motifs mathématiques
-   - Utiliser la distance au centre comme facteur d'échelle
-   - Maintenir une symétrie globale tout en permettant des variations locales
-   - Laisser des espaces de respiration dans la composition
+2. **Dynamic Composition**
+   - Create focus areas with mathematical patterns
+   - Use distance from the center as a scaling factor
+   - Maintain global symmetry while allowing local variations
+   - Leave breathing spaces in the composition
